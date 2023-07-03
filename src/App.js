@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Login from './components/forms/Login';
+import Signup from './components/forms/Signup';
+import Verification from './components/forms/Verification';
 
-function App() {
+const App = () => {
+  const [page, setPage] = useState('');
+
+  const handleLoginClick = () => {
+    setPage('login');
+  };
+
+  const handleSignupClick = () => {
+    setPage('signup');
+  };
+
+  const handleVerificationClick = () => {
+    setPage('verification');
+  };
+
+  const renderPage = () => {
+    switch (page) {
+      case 'login':
+        return <Login />;
+      case 'signup':
+        return <Signup />;
+      case 'verification':
+        return <Verification/>;
+      default:
+        return (
+          <div>
+            <button onClick={handleLoginClick}>Login</button>
+            <button onClick={handleSignupClick}>Signup</button>
+            <button onClick={handleVerificationClick}>Verification</button>
+          </div>
+        );
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Patient Authentication</h1>
+      {renderPage()}
     </div>
   );
-}
+};
 
 export default App;

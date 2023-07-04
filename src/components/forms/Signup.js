@@ -12,6 +12,8 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UserPool from "../constants/UserPool";
+import { useNavigate } from 'react-router-dom';
+import VerifyEmail from "./VerifyEmail";
 
 const defaultTheme = createTheme();
 
@@ -20,6 +22,9 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
@@ -32,12 +37,20 @@ const Signup = () => {
     UserPool.signUp(email, password, [], null, (err,data)=>{
       if(err) {
         console.error(err);
+        setSnackbarMessage("Error creating user");
       }
+      else{
       console.log(data);
       setOpenSnackbar(true);
       setSnackbarMessage("User Created Successfully");
+      setSubmitted(true);
+      }
     });
   };
+
+  if (submitted) {
+    return <VerifyEmail email={email} />;
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>

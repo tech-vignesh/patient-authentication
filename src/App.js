@@ -1,31 +1,33 @@
-import React, { useState } from 'react';
-import Login from './components/forms/Login';
-import Signup from './components/forms/Signup';
-import Verification from './components/forms/Verification';
+import React, { useState } from "react";
+import Login from "./components/forms/Login";
+import Signup from "./components/forms/Signup";
+import Verification from "./components/forms/Verification";
+import VerifyEmail from "./components/forms/VerifyEmail";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = () => {
-  const [page, setPage] = useState('');
+  const [page, setPage] = useState("");
 
   const handleLoginClick = () => {
-    setPage('login');
+    setPage("login");
   };
 
   const handleSignupClick = () => {
-    setPage('signup');
+    setPage("signup");
   };
 
   const handleVerificationClick = () => {
-    setPage('verification');
+    setPage("verification");
   };
 
   const renderPage = () => {
     switch (page) {
-      case 'login':
+      case "login":
         return <Login />;
-      case 'signup':
+      case "signup":
         return <Signup />;
-      case 'verification':
-        return <Verification/>;
+      case "verification":
+        return <Verification />;
       default:
         return (
           <div>
@@ -38,10 +40,15 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Patient Authentication</h1>
-      {renderPage()}
-    </div>
+    <Router>
+      <div>
+        <h1>Patient Authentication</h1>
+        <Routes>
+          <Route path="/verify-email" element={<VerifyEmail />} />
+        </Routes>
+        {renderPage()}
+      </div>
+    </Router>
   );
 };
 

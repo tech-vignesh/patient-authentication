@@ -12,6 +12,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UserPool from "../constants/UserPool";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 
 const defaultTheme = createTheme();
@@ -21,8 +22,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const handleSnackbarClose = () => {
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setOpenSnackbar(false);
   };
 
@@ -46,11 +51,13 @@ const Login = () => {
         console.log("onSuccess: ", data);
         setOpenSnackbar(true);
         setSnackbarMessage("Login successful");
+        setSnackbarSeverity("success");
       },
       onFailure: (err) => {
         console.error("onFailure: ", err);
         setOpenSnackbar(true);
-        setSnackbarMessage("User not confirmed / incorrect password");
+        setSnackbarMessage(err.message);
+        setSnackbarSeverity("error");
       },
       newPasswordRequired: (data) => {
         console.log("newPasswordRequired ", data);
@@ -131,8 +138,13 @@ const Login = () => {
               elevation={6}
               variant="filled"
               onClose={handleSnackbarClose}
-              severity={
-                snackbarMessage === "Login failed" ? "error" : "success"
+              severity={snackbarSeverity}
+              icon={
+                snackbarSeverity === "success" ? (
+                  <CheckCircleOutline fontSize="inherit" />
+                ) : (
+                  <ErrorOutline fontSize="inherit" />
+                )
               }
             >
               {snackbarMessage}

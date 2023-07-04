@@ -13,12 +13,17 @@ import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CognitoIdentityServiceProvider } from "aws-sdk";
 import AWS from "aws-sdk";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 
 const defaultTheme = createTheme();
 
-const VerifyEmail = ({email}) => {
+const VerifyEmail = ({ email }) => {
   const [confirmationCode, setConfirmationCode] = useState("");
   const [confirmationStatus, setConfirmationStatus] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   AWS.config.update({
     region: "eu-north-1",
@@ -42,11 +47,23 @@ const VerifyEmail = ({email}) => {
       if (err) {
         console.error(err);
         setConfirmationStatus("Error confirming user");
+        setSnackbarSeverity("error");
+        setSnackbarMessage(err.message);
       } else {
         console.log("User confirmed successfully");
         setConfirmationStatus("User confirmed successfully");
+        setSnackbarSeverity("success");
+        setSnackbarMessage("User confirmed successfully");
       }
+      setSnackbarOpen(true);
     });
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
@@ -67,7 +84,11 @@ const VerifyEmail = ({email}) => {
           <Typography component="h1" variant="h5">
             Verify User
           </Typography>
-          <Typography component="h1" variant="h6" style={{ textAlign: "center" }}>
+          <Typography
+            component="h1"
+            variant="h6"
+            style={{ textAlign: "center" }}
+          >
             Please enter the verification code receieved in you email !
           </Typography>
           <Box
@@ -109,6 +130,31 @@ const VerifyEmail = ({email}) => {
               Verify User!
             </Button>
           </Box>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={snackbarSeverity}
+              onClose={handleSnackbarClose}
+              icon={
+                snackbarSeverity === "success" ? (
+                  <CheckCircleOutline fontSize="inherit" />
+                ) : (
+                  <ErrorOutline fontSize="inherit" />
+                )
+              }
+            >
+              {snackbarMessage}
+            </MuiAlert>
+          </Snackbar>
         </Box>
       </Container>
     </ThemeProvider>

@@ -12,8 +12,8 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UserPool from "../constants/UserPool";
-import { useNavigate } from 'react-router-dom';
 import VerifyEmail from "./VerifyEmail";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
 
 const defaultTheme = createTheme();
 
@@ -22,11 +22,14 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [submitted, setSubmitted] = useState(false);
 
-  const navigate = useNavigate();
 
-  const handleSnackbarClose = () => {
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setOpenSnackbar(false);
   };
 
@@ -37,14 +40,16 @@ const Signup = () => {
     UserPool.signUp(email, password, [], null, (err,data)=>{
       if(err) {
         console.error(err);
-        setSnackbarMessage("Error creating user");
+        setSnackbarMessage(err.message);
+        setSnackbarSeverity("error");
       }
       else{
       console.log(data);
-      setOpenSnackbar(true);
       setSnackbarMessage("User Created Successfully");
+      setSnackbarSeverity("success");
       setSubmitted(true);
       }
+      setOpenSnackbar(true);
     });
   };
 
@@ -125,9 +130,16 @@ const Signup = () => {
               elevation={6}
               variant="filled"
               onClose={handleSnackbarClose}
-              severity="success"
+              severity={snackbarSeverity}
+              icon={
+                snackbarSeverity === "success" ? (
+                  <CheckCircleOutline fontSize="inherit" />
+                ) : (
+                  <ErrorOutline fontSize="inherit" />
+                )
+              }
             >
-              User created successfully!
+              {snackbarMessage}
             </MuiAlert>
           </Snackbar>
         </Box>

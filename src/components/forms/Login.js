@@ -9,6 +9,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Snackbar from "@mui/material/Snackbar";
+import Link from '@mui/material/Link';
 import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UserPool from "../constants/UserPool";
@@ -124,6 +125,18 @@ const Login = () => {
             >
               Login!
             </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href="/" variant="body2">
+                  Go Back
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="/signup" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
           <Snackbar
             open={openSnackbar}

@@ -5,32 +5,37 @@ import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
+import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import Link from '@mui/material/Link';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CognitoIdentityServiceProvider } from "aws-sdk";
-import AWS from 'aws-sdk';
-
+import AWS from "aws-sdk";
+import {useNavigate} from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
 const Verification = () => {
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [email, setEmail] = useState('');
-  const [confirmationStatus, setConfirmationStatus] = useState("");
+  const [email, setEmail] = useState("");
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   AWS.config.update({
-    region: 'eu-north-1',
+    region: "eu-north-1",
   });
-  
+
+  const navigate = useNavigate();
 
   const handleConfirm = (event) => {
-
     event.preventDefault();
-    
+
     const clientId = "532k44t4ksvp0q2kk5mbqbtcaa";
     const username = email;
 
@@ -45,12 +50,27 @@ const Verification = () => {
     cognitoIdentityServiceProvider.confirmSignUp(params, (err, data) => {
       if (err) {
         console.error(err);
-        setConfirmationStatus("Error confirming user");
+        setSnackbarSeverity("error");
+        setSnackbarMessage(err.message);
       } else {
         console.log("User confirmed successfully");
-        setConfirmationStatus("User confirmed successfully");
+        setSnackbarSeverity("success");
+        setSnackbarMessage("User confirmed successfully");
+        setTimeout(() => {
+            navigate("/");
+          }, 3000);
       }
+      setSnackbarOpen(true);
     });
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+
+   
   };
 
   return (
@@ -91,7 +111,7 @@ const Verification = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-              <TextField
+                <TextField
                   required
                   fullWidth
                   id="confirmationCode"
@@ -111,12 +131,43 @@ const Verification = () => {
             >
               Verify User!
             </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item xs>
+                <Link href="/" variant="body2">
+                  Go Back
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
-          </Box>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+          >
+            <MuiAlert
+              elevation={6}
+              variant="filled"
+              severity={snackbarSeverity}
+              onClose={handleSnackbarClose}
+              icon={
+                snackbarSeverity === "success" ? (
+                  <CheckCircleOutline fontSize="inherit" />
+                ) : (
+                  <ErrorOutline fontSize="inherit" />
+                )
+              }
+            >
+              {snackbarMessage}
+            </MuiAlert>
+          </Snackbar>
+        </Box>
       </Container>
     </ThemeProvider>
-
-  )
+  );
 };
 
 export default Verification;

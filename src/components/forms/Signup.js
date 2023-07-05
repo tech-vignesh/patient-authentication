@@ -14,6 +14,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UserPool from "../constants/UserPool";
 import VerifyEmail from "./VerifyEmail";
 import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import {useNavigate} from 'react-router-dom';
+import Link from '@mui/material/Link';
 
 const defaultTheme = createTheme();
 
@@ -25,6 +27,7 @@ const Signup = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [submitted, setSubmitted] = useState(false);
 
+  const navigate = useNavigate();
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -54,7 +57,7 @@ const Signup = () => {
   };
 
   if (submitted) {
-    return <VerifyEmail email={email} />;
+    navigate('/signup/verify', { state: { email } });
   }
 
   return (
@@ -116,6 +119,18 @@ const Signup = () => {
             >
               Sign Up
             </Button>
+            <Grid container justifyContent="flex-end">
+            <Grid item xs>
+                <Link href="/" variant="body2">
+                  Go Back
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="/login" variant="body2">
+                  Already have an account? Sign in
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
           <Snackbar
             open={openSnackbar}

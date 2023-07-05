@@ -13,13 +13,14 @@ import MuiAlert from "@mui/material/Alert";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CognitoIdentityServiceProvider } from "aws-sdk";
 import AWS from "aws-sdk";
+import Link from "@mui/material/Link";
 import { CheckCircleOutline, ErrorOutline } from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
-const VerifyEmail = ({ email }) => {
+const VerifyEmail = ({}) => {
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [confirmationStatus, setConfirmationStatus] = useState("");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
@@ -28,6 +29,10 @@ const VerifyEmail = ({ email }) => {
   AWS.config.update({
     region: "eu-north-1",
   });
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { email } = location.state;
 
   const handleConfirm = (event) => {
     event.preventDefault();
@@ -46,14 +51,15 @@ const VerifyEmail = ({ email }) => {
     cognitoIdentityServiceProvider.confirmSignUp(params, (err, data) => {
       if (err) {
         console.error(err);
-        setConfirmationStatus("Error confirming user");
         setSnackbarSeverity("error");
         setSnackbarMessage(err.message);
       } else {
         console.log("User confirmed successfully");
-        setConfirmationStatus("User confirmed successfully");
         setSnackbarSeverity("success");
         setSnackbarMessage("User confirmed successfully");
+        setTimeout(() => {
+          navigate("/");
+        }, 3000);
       }
       setSnackbarOpen(true);
     });
@@ -129,6 +135,13 @@ const VerifyEmail = ({ email }) => {
             >
               Verify User!
             </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item xs>
+                <Link href="/" variant="body2">
+                  Go To Home
+                </Link>
+              </Grid>
+            </Grid>
           </Box>
           <Snackbar
             open={snackbarOpen}
